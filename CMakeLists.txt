@@ -26,6 +26,8 @@ else()
 endif()
 function(tg_game_output target)
   set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${TG_BIN_DIR}" PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+  # bin/ may have been deleted since CMake was configured: make it again before linking
+  add_custom_command(TARGET ${target} PRE_LINK COMMAND ${CMAKE_COMMAND} -E make_directory "${TG_BIN_DIR}")
   foreach(cfg DEBUG RELEASE RELWITHDEBINFO MINSIZEREL)   # multi-config generators would add a Release/ subfolder otherwise
     set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${cfg} "${TG_BIN_DIR}" PDB_OUTPUT_DIRECTORY_${cfg} "${CMAKE_BINARY_DIR}")
   endforeach()

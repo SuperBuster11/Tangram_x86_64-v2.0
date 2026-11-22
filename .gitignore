@@ -5,3 +5,4 @@ out/
 .vs/
 bin/
 bin64/
+installer/output/

@@ -8,6 +8,8 @@
 
 #include <algorithm>
 #include <atomic>
+#include <cstdlib>
+#include <filesystem>
 #include <fstream>
 #include <iterator>
 #include <mutex>
@@ -21,6 +23,16 @@
 #include "scale_filter.hpp"
 
 static tg::Game g_game;
+// The high-score table ("scoredisk") lives in %APPDATA%\Tangram\tangram.sco: a game installed in Program Files may not write
+// next to its exe. Older versions kept tangram.sco in the current folder; that file is still read when there is none in %APPDATA%.
+static std::filesystem::path scoreFile() {
+    const wchar_t* appData = _wgetenv(L"APPDATA");
+    return (appData && *appData ? std::filesystem::path(appData) / L"Tangram" : std::filesystem::path(L".")) / L"tangram.sco";
+}
+static void saveScoreFile(const tg::Bytes& d) {
+    std::error_code ec; std::filesystem::create_directories(scoreFile().parent_path(), ec);
+    std::ofstream out(scoreFile(), std::ios::binary); out.write(reinterpret_cast<const char*>(d.data()), std::streamsize(d.size()));
+}
 static const char* const kTitle = sizeof(void*) == 8 ? "Tangram 64-bit" : "Tangram 32-bit";   // window title: Tangram_x64.exe / Tangram_x86.exe
 static int g_scale = 4;        // window size = 320x200 times this (starts at 1280x800); F5 cycles 4 .. g_maxScale
 static int g_maxScale = 4;
@@ -163,7 +175,7 @@ static LRESULT CALLBACK proc(HWND h, UINT m, WPARAM w, LPARAM l) {
         if (w >= 33 && w <= 95 && !((w >= '0' && w <= '9') || (w >= 'A' && w <= 'Z'))) { e.type = tg::Event::Key; e.key = int(w); g_game.event(e); }
         return 0;
     case WM_TIMER: g_game.step();
-        if (g_game.takeScoresDirty()) { tg::Bytes d = g_game.saveScores(); std::ofstream out("tangram.sco", std::ios::binary); out.write(reinterpret_cast<const char*>(d.data()), std::streamsize(d.size())); } if (g_game.quitRequested()) { DestroyWindow(h); return 0; } InvalidateRect(h, nullptr, FALSE); return 0;
+        if (g_game.takeScoresDirty()) saveScoreFile(g_game.saveScores()); if (g_game.quitRequested()) { DestroyWindow(h); return 0; } InvalidateRect(h, nullptr, FALSE); return 0;
     case WM_PAINT: { PAINTSTRUCT ps; HDC dc = BeginPaint(h, &ps); present(dc, cw, ch); EndPaint(h, &ps); return 0; }
     case WM_DESTROY: PostQuitMessage(0); return 0;
     }
@@ -180,7 +192,11 @@ int WINAPI WinMain(HINSTANCE inst, HINSTANCE, LPSTR cmd, int show) {
     tg::Adf adf; std::string err;
     const bool loaded = path.empty() ? tg::loadDataFolder(adf, dataDir, err) : adf.loadFile(path, err);
     if (!loaded || !g_game.init(adf, err)) { MessageBoxA(nullptr, err.c_str(), kTitle, MB_ICONERROR); return 1; }
-    { std::ifstream in("tangram.sco", std::ios::binary); if (in) g_game.loadScores(tg::Bytes(std::istreambuf_iterator<char>(in), {})); }
+    {   // high scores: %APPDATA%\Tangram\tangram.sco, or the old tangram.sco in the current folder
+        std::ifstream in(scoreFile(), std::ios::binary);
+        if (!in) in.open("tangram.sco", std::ios::binary);
+        if (in) g_game.loadScores(tg::Bytes(std::istreambuf_iterator<char>(in), {}));
+    }
     {   // music1.wav / music2.wav in the data folder (or next to the exe, or in the current folder) replace the emulated songs
         for (int song = 1; song <= 2; song++) {
             const std::string name = "music" + std::to_string(song) + ".wav";

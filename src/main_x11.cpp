@@ -9,6 +9,7 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
+#include <filesystem>
 #include <fstream>
 #include <iterator>
 
@@ -50,8 +51,18 @@ int main(int argc, char** argv) {
     if (adfPath ? !adf.loadFile(adfPath, err) : !tg::loadDataFolder(adf, dataDir, err)) { std::fprintf(stderr, "%s\n", err.c_str()); return 1; }
     tg::Game game;
     if (!game.init(adf, err)) { std::fprintf(stderr, "%s\n", err.c_str()); return 1; }
-    const char* scorePath = "tangram.sco";   // the "scoredisk": high-score table kept in the current directory
-    { std::ifstream in(scorePath, std::ios::binary); if (in) game.loadScores(tg::Bytes(std::istreambuf_iterator<char>(in), {})); }
+    // the "scoredisk": high-score table in $XDG_DATA_HOME/tangram (default ~/.local/share/tangram); the old tangram.sco in the
+    // current folder is still read when there is none there
+    std::string scoreDir;
+    if (const char* x = std::getenv("XDG_DATA_HOME"); x && *x) scoreDir = std::string(x) + "/tangram";
+    else if (const char* home = std::getenv("HOME"); home && *home) scoreDir = std::string(home) + "/.local/share/tangram";
+    else scoreDir = ".";
+    const std::string scorePath = scoreDir + "/tangram.sco";
+    {
+        std::ifstream in(scorePath, std::ios::binary);
+        if (!in) in.open("tangram.sco", std::ios::binary);
+        if (in) game.loadScores(tg::Bytes(std::istreambuf_iterator<char>(in), {}));
+    }
     {   // music1.wav / music2.wav in the data folder (or next to the program, or in the current folder) replace the emulated songs
         for (int song = 1; song <= 2; song++) {
             const std::string name = "music" + std::to_string(song) + ".wav";
@@ -186,7 +197,11 @@ int main(int argc, char** argv) {
             }
         }
         game.step();
-        if (game.takeScoresDirty()) { tg::Bytes d = game.saveScores(); std::ofstream out(scorePath, std::ios::binary); out.write(reinterpret_cast<const char*>(d.data()), std::streamsize(d.size())); }
+        if (game.takeScoresDirty()) {
+            tg::Bytes d = game.saveScores();
+            std::error_code ec; std::filesystem::create_directories(scoreDir, ec);
+            std::ofstream out(scorePath, std::ios::binary); out.write(reinterpret_cast<const char*>(d.data()), std::streamsize(d.size()));
+        }
         if (game.quitRequested()) break;
         if (wavPath || audioStdout) {
             game.audio(chunk.data(), 882);

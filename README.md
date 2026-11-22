@@ -69,6 +69,17 @@ w folderze `data` (albo obok exe, albo w bieżącym folderze); bez nich gra emul
 w `data/` i są kopiowane razem z resztą danych. Wymagany WAV 16-bit PCM (mono lub stereo, dowolna częstotliwość);
 nagranie gra od początku, gdy utwór się zaczyna (start, M, F2, bonus), po końcu znów od początku, z tą samą głośnością (25%).
 
+## Instalator (Windows)
+Skrypt Inno Setup: `installer/tangram.iss`. Najpierw zbuduj grę w Release (x64 → `bin64`, x86 → `bin`; wystarczy jedna),
+potem otwórz skrypt w Inno Setup 6.3+ (jrsoftware.org, darmowy) i wybierz *Compile*. Powstaje
+`installer/output/Tangram_Setup_vX.exe`: kreator po polsku, instalacja w Program Files (albo tylko dla bieżącego użytkownika),
+skrót w menu Start i opcjonalnie na pulpicie, deinstalator. Na 64-bitowym Windows instaluje wersję 64-bit, na 32-bitowym – 32-bit
+(jako `Tangram.exe`).
+
+Tabela wyników jest zapisywana w `%APPDATA%\Tangram\tangram.sco` (Linux: `~/.local/share/tangram/tangram.sco`), więc działa
+także po instalacji w Program Files; stary plik `tangram.sco` z bieżącego folderu jest wczytywany, jeśli tam jeszcze nic nie ma.
+Po odinstalowaniu tabela zostaje.
+
 ## Stan
 Gra jest kompletna i porównywana z oryginałem (zrzuty z WinUAE, analiza kodu 68000): intro, menu, 200 etapów z hasłami,
 układanie i obracanie klocków, sprawdzanie ułożenia jak w oryginale, punktacja, tryby Novice/Expert, tryb dla dwóch graczy
