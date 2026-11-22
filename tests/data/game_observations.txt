@@ -1,0 +1,18 @@
+# Observations from the real game (headless run, solutions from tools/solve_level), difficulty/players as after clicking the dragon.
+# passwords shown after solving level N (they are "PASSWORD FOR LEVEL N+1"):
+password 2 03797
+password 3 58829
+password 4 73159
+# score: level, time_left_shown, bonus_row_shown, score_gain
+score 1 59 34 65
+score 1 54 35 63
+score 1 50 35 61
+score 1 46 34 59
+score 1 37 35 55
+score 1 32 34 51
+score 2 57 70 130
+score 2 50 70 122
+score 2 44 70 116
+score 2 39 68 110
+score 3 55 95 153
+# at level start the second counter shows 50 (L2), 75 (L3), 100 (L4); level time counter starts at 96 for L2-L4

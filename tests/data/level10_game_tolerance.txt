@@ -1,0 +1,13 @@
+# piece dx dy solved_in_game  (stage 10 layout from level10_user.txt, one piece shifted; measured in the original via the Go simulator)
+4 -1 0 1
+4 1 0 1
+0 1 0 1
+0 0 1 1
+1 0 -1 1
+1 1 0 1
+2 -1 0 1
+2 0 -1 1
+4 -2 0 0
+0 2 0 0
+1 2 0 0
+3 0 -2 0
