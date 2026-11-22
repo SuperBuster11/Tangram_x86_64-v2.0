@@ -3,3 +3,5 @@ out/
 *.zip
 *.wav
 .vs/
+bin/
+bin64/

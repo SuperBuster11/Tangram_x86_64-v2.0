@@ -744,3 +744,8 @@ Rozwiązanie etapu 2 odczytane ze zrzutu użytkownika (klasyfikacja kolorów klo
 - CMake: po kompilacji kopiuje data/ obok exe (copy_directory_if_different od CMake 3.26, inaczej copy_directory). Exe X11 1,1 MB → 0,36 MB.
 - Test test_datafolder (gra startuje z folderu data, brakujące pliki zgłaszane, z TANGRAM_ADF – zgodność bajtowa z dyskietką). Sprawdzone: X11 uruchomiony z innego folderu znajduje data obok programu; sam program bez data – komunikat o brakujących plikach.
 - Plik level10_user_shift.txt w katalogu projektu był pozostałością testu (test_game zapisywał go w bieżącym folderze). Usunięty; test zapisuje teraz plik tymczasowy w folderze tymczasowym systemu i go kasuje.
+
+## Etap 75 – folder wyjściowy bin / bin64, Release bez testów
+- CMakeLists przebudowany: gra (Tangram_x86.exe / Tangram_x64.exe, na Linuksie tangram_x11) trafia do bin/ (32-bit) albo bin64/ (64-bit) w folderze projektu, razem z kopią data/; pliki .pdb do folderu kompilacji, więc w bin zostaje samo exe + data (w Debug MSVC może jeszcze dodać .ilk). Dla generatorów wielokonfiguracyjnych ustawione RUNTIME_OUTPUT_DIRECTORY_<CONFIG>, żeby nie powstawał podfolder Release.
+- Opcja TANGRAM_BUILD_TESTS: domyślnie OFF dla Release / RelWithDebInfo / MinSizeRel (budowana jest tylko gra), ON dla Debug. Usunięte zbędne już kasowanie starego tangram.exe. .gitignore: bin/, bin64/.
+- Sprawdzone: Release na Linuksie – tylko biblioteki gry i bin64/tangram_x11 + bin64/data; Debug – wszystkie 15 testów przechodzi.

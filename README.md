@@ -13,6 +13,8 @@ data\SCORE.DTA          domyślna tabela wyników
 data\music1.wav, music2.wav   (opcjonalnie) nagrania zamiast emulowanej muzyki
 ```
 
+Gotowa gra powstaje w folderze projektu: `bin/` (32-bit) albo `bin64/` (64-bit) – exe + `data`; w folderze kompilacji zostają tylko pliki robocze. Release buduje samą grę (bez testów i narzędzi).
+
 Bez folderu `data` gra pokazuje, których plików brakuje. Obraz dyskietki podany przy uruchomieniu (`Tangram_x64.exe disk.adf`)
 zastępuje folder `data`. W programie zostały tylko ikona i kilka drobnych grafik odtworzonych w kodzie.
 Muzyka jest odtwarzana przez wbudowany interpreter procesora 68000 i emulację układu Paula.
