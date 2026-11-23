@@ -175,11 +175,11 @@ int main(int argc, char** argv) {
         std::ifstream cf(dir + "/cheat_list_from_user.txt"); int lv, code;
         while (cf >> lv >> code) { char b[8]; std::snprintf(b, sizeof b, "%d", code); int got = pw.levelFor(b);   /* as printed in the list: no leading zeros */ CHECK(got == lv || got == 170 || got == 141); }   // two list entries equal real codes of levels 170 and 141
     }
-    {   // the code of stage 200 is rejected like in the original (stage 1); 75258 = stage 199; after stage 200 random EXP stages go on
+    {   // the code of stage 200 starts stage 200 (fixed; the original starts stage 1); 75258 = stage 199; after stage 200 random EXP stages go on
         Game g2; CHECK(g2.init(adf, err, false));
         Event en2; en2.type = Event::Key; en2.key = kKeyEnter;
         typeKeys(g2, "95039"); g2.event(en2); settle(g2);
-        CHECK(g2.mode() == Game::Mode::Play && g2.level() == 1);
+        CHECK(g2.mode() == Game::Mode::Play && g2.level() == 200);
         Game g3; CHECK(g3.init(adf, err, false));
         typeKeys(g3, "75258"); g3.event(en2); settle(g3);
         CHECK(g3.mode() == Game::Mode::Play && g3.level() == 199);

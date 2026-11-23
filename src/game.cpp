@@ -124,8 +124,9 @@ void Game::showNameEntryForTest(bool expert, int level, long score, const std::s
 
 void Game::startNewGame() {   // Novice: stage 1 or the stage of the typed password; Expert: a random stage of the 200
     int lv = typed_.empty() ? 1 : passwords_.levelFor(typed_);   // an invalid code starts at stage 1, like the original
-    if (lv >= int(levels_.size())) lv = 0;   // the original rejects the code of stage 200 (typing 95039 starts at stage 1; tested in the simulator, 75258 = stage 199 works;
-                                             // 0x101b04 searches only FOR i = 1 TO 995 STEP 5)
+    // The original rejects the code of stage 200 (0x101b04 searches only FOR i = 1 TO 995 STEP 5, so typing 95039 starts stage 1 although
+    // the game shows that code after stage 199). Fixed on the user's request: 95039 starts stage 200.
+    if (lv > int(levels_.size())) lv = 0;
     if (expert_) lv = randomLevel();
     beyond_ = false; score_ = 0; playerScore_[0] = playerScore_[1] = 0; stagesDone_[0] = stagesDone_[1] = 0; bonusDue_ = false; bonusStages_[0] = bonusStages_[1] = 0; bonusUnits_ = 200; player_ = 0; startLevel(lv ? lv : 1); typed_.clear();
 }

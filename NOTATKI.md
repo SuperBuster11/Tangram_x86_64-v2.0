@@ -719,7 +719,7 @@ Rozwiązanie etapu 2 odczytane ze zrzutu użytkownika (klasyfikacja kolorów klo
 - Esc kończy grę (oryginał: E – działa też); P pauzuje (oryginał: tylko spacja); Esc w etapie bonusowym.
 - Utwór 2 w etapie bonusowym (oryginał gra dalej utwór 1); muzyka z plików WAV, jeśli są.
 - Obrót przy przytrzymanym PPM (w tej wersji kodu powtarzanie nie działa).
-- Hasła z listy użytkownika różniące się jedną cyfrą też są przyjmowane.
+- Hasła z listy użytkownika różniące się jedną cyfrą też są przyjmowane; hasło etapu 200 (95039) działa (w oryginale nie).
 - Okno, filtry, pełny ekran, ikona, tytuł – dodatki portu.
 
 ## Etap 71 – dźwięk w wersji na Linuksa
@@ -754,3 +754,6 @@ Rozwiązanie etapu 2 odczytane ze zrzutu użytkownika (klasyfikacja kolorów klo
 - installer/tangram.iss: Inno Setup 6.3+; bierze bin64\Tangram_x64.exe i/lub bin\Tangram_x86.exe (preprocesor sprawdza, które są; tylko x64 → instalator tylko dla 64-bit), instaluje jako Tangram.exe, wersja 64-bit na 64-bitowym Windows; polski i angielski kreator, Program Files albo tylko dla użytkownika (PrivilegesRequiredOverridesAllowed=dialog), skróty, deinstalator, uruchomienie po instalacji. Ten sam AppId w v1 i v2.0 – nowsza wersja zastępuje starszą. Wynik: installer/output/Tangram_Setup_vX.exe. Nie testowane tutaj (Inno Setup działa tylko na Windows).
 - Tabela wyników: Windows %APPDATA%\Tangram\tangram.sco (ścieżka szeroka – _wgetenv + std::filesystem, działa z polskimi znakami w nazwie użytkownika), Linux $XDG_DATA_HOME/tangram albo ~/.local/share/tangram; folder tworzony przy zapisie; stary tangram.sco z bieżącego folderu wczytywany, gdy nowego brak. Powód: w Program Files gra nie może pisać obok exe.
 - CMake: przed linkowaniem tworzy bin/ (bin64/), gdyby został usunięty po konfiguracji.
+
+## Etap 77 – hasło etapu 200 działa (decyzja użytkownika)
+- Oryginał odrzuca hasło 95039 (etap 200), choć pokazuje je po etapie 199 (0x101b04: FOR i = 1 TO 995 STEP 5). Na prośbę użytkownika poprawione: 95039 uruchamia etap 200. Świadome odstępstwo. Sprawdzone: wszystkie 200 haseł z listy uruchamia właściwy etap.
